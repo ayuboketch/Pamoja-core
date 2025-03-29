@@ -1,0 +1,117 @@
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: docker/prod.Dockerfile
+    container_name: pamoja-client
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-3000}:80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - server
+    networks:
+      - pamoja-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: docker/Dockerfile.prod
+    container_name: pamoja-server
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-5000}:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-production_password}
+      - MONGO_DATABASE=${MONGO_DATABASE:-pamoja}
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-production_password}@mongo1:27017,mongo2:27018,mongo3:27019/${MONGO_DATABASE:-pamoja}?replicaSet=rs0&authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400}
+    env_file:
+      - .env.production
+    depends_on:
+      - mongo
+    networks:
+      - pamoja-network
+  mongo1:
+    image: mongo:6.0
+    container_name: mongo1
+    restart: ${RESTART_POLICY:-unless-stopped}
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--keyFile", "/data/mongodb-keyfile/mongodb-keyfile", "--auth"]
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo1-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+      - mongodb-keyfile:/data/mongodb-keyfile
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-production_password}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-pamoja}
+    networks:
+      - pamoja-network
+
+  mongo2:
+    image: mongo:6.0
+    container_name: mongo2
+    restart: ${RESTART_POLICY:-unless-stopped}
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27018", "--keyFile", "/data/mongodb-keyfile/mongodb-keyfile", "--auth"]
+    ports:
+      - "27018:27018"
+    volumes:
+      - mongo2-data:/data/db
+      - mongodb-keyfile:/data/mongodb-keyfile
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-production_password}
+    networks:
+      - pamoja-network
+
+  mongo3:
+    image: mongo:6.0
+    container_name: mongo3
+    restart: ${RESTART_POLICY:-unless-stopped}
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27019", "--keyFile", "/data/mongodb-keyfile/mongodb-keyfile", "--auth"]
+    ports:
+      - "27019:27019"
+    volumes:
+      - mongo3-data:/data/db
+      - mongodb-keyfile:/data/mongodb-keyfile
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-production_password}
+    networks:
+      - pamoja-network
+
+  mongo-init:
+    image: mongo:6.0
+    container_name: mongo-init
+    restart: "no"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    volumes:
+      - ./scripts:/scripts
+      - mongodb-keyfile:/data/mongodb-keyfile
+    entrypoint: ["bash", "/scripts/mongo-init.sh"]
+    environment:
+      - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:-production_password}
+      - MONGO_DATABASE=${MONGO_DATABASE:-pamoja}
+    networks:
+      - pamoja-network
+
+volumes:
+  mongo1-data:
+  mongo2-data:
+  mongo3-data:
+  mongodb-keyfile:
+
+networks:
+  pamoja-network:
+    driver: bridge

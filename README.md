@@ -1,9 +1,11 @@
 # Pamoja Community Platform
 
 ## Overview
+
 Pamoja Community Platform is a comprehensive web application designed to support Kenyan software developers by creating a supportive ecosystem that bridges the gap between developers, recruiters, HR professionals, and tech leaders. The platform facilitates networking, job searching, resource sharing, and community building.
 
 ## Technology Stack
+
 The Pamoja Platform is built using the MERN stack with real-time features:
 
 - **M**ongoDB - NoSQL database
@@ -16,6 +18,7 @@ The Pamoja Platform is built using the MERN stack with real-time features:
 ## System Architecture
 
 ### Client Layer
+
 The client layer is built with React.js and includes:
 
 - React components organized by feature
@@ -25,6 +28,7 @@ The client layer is built with React.js and includes:
 - Material UI / Tailwind CSS for responsive design
 
 ### Server Layer
+
 The server layer uses Express.js on Node.js:
 
 - RESTful API endpoints for CRUD operations
@@ -34,6 +38,7 @@ The server layer uses Express.js on Node.js:
 - Express middleware for request processing
 
 ### Database Layer
+
 MongoDB serves as the database with the following collections:
 
 - Users - Store user profiles, credentials, and relationships
@@ -46,6 +51,7 @@ MongoDB serves as the database with the following collections:
 - Notifications - System and user notifications
 
 ### Real-time Features
+
 The platform implements several real-time features powered by Socket.io and MongoDB change streams:
 
 - Live chat messaging - For direct and group communications
@@ -57,6 +63,7 @@ The platform implements several real-time features powered by Socket.io and Mong
 ## Key Components & Data Flow
 
 ### Authentication Flow
+
 1. User registers or logs in
 2. Server validates credentials
 3. JWT token issued to client
@@ -64,6 +71,7 @@ The platform implements several real-time features powered by Socket.io and Mong
 5. Protected routes check token validity
 
 ### Messaging System
+
 1. User joins a chat room
 2. Messages stored in MongoDB
 3. Change streams detect new messages
@@ -71,6 +79,7 @@ The platform implements several real-time features powered by Socket.io and Mong
 5. UI updates in real-time
 
 ### Job Application Workflow
+
 1. Recruiter posts job
 2. Job appears on job board
 3. Developers apply with profile/CV
@@ -78,6 +87,7 @@ The platform implements several real-time features powered by Socket.io and Mong
 5. Status updates trigger notifications
 
 ### CV Review System
+
 1. Developer uploads CV for review
 2. Mentors/peers receive notification
 3. Reviewers provide feedback
@@ -114,9 +124,11 @@ pamoja-platform/
 ## Database Design
 
 ### Primary Collections
+
 The MongoDB database is structured around the following core collections:
 
 **Users Collection**
+
 - Personal information
 - Professional profile details
 - Skills and expertise
@@ -124,6 +136,7 @@ The MongoDB database is structured around the following core collections:
 - Account settings
 
 **Jobs Collection**
+
 - Job descriptions and requirements
 - Company information
 - Application tracking
@@ -131,6 +144,7 @@ The MongoDB database is structured around the following core collections:
 - Visibility settings
 
 **Chats Collection**
+
 - Message history
 - Participants information
 - Read receipts
@@ -138,6 +152,7 @@ The MongoDB database is structured around the following core collections:
 - Chat types (direct/group)
 
 **Reviews Collection**
+
 - CV document references
 - Reviewer information
 - Feedback comments
@@ -145,6 +160,7 @@ The MongoDB database is structured around the following core collections:
 - Status indicators
 
 **Resources Collection**
+
 - Document metadata
 - File references
 - Categories and tags
@@ -195,7 +211,7 @@ Change streams are used to monitor database changes and trigger real-time events
 The platform requires the following to be set up locally:
 
 - Node.js (v14+)
-- MongoDB
+- Docker
 - npm or yarn
 - Git
 
@@ -208,6 +224,38 @@ The application uses environment variables for configuration:
 - JWT secret key
 - Socket.io configuration
 - Environment indicator (development/production)
+
+## Running the application
+
+1. Start the development environment
+
+```bash
+./pamoja.sh start:dev
+```
+
+2. Start the production environment
+
+```bash
+./pamoja.sh start:prod
+```
+
+3. Stop the application
+
+```bash
+./pamoja.sh stop
+```
+
+4. View the logs
+
+```bash
+./pamoja.sh logs
+```
+
+5. Rebuild the application
+
+```bash
+./pamoja.sh rebuild
+```
 
 ## Deployment Strategy
 

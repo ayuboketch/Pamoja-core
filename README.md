@@ -210,60 +210,132 @@ Change streams are used to monitor database changes and trigger real-time events
 
 The platform requires the following to be set up locally:
 
-- Node.js (v14+)
-- Docker
-- npm or yarn
+- Docker and Docker Compose
 - Git
+
+All services run in containers, so no need for local Node.js installation.
 
 ## Environment Configuration
 
 The application uses environment variables for configuration:
 
-- Server port
-- MongoDB connection string
-- JWT secret key
-- Socket.io configuration
-- Environment indicator (development/production)
+- `.env.development` - Development environment variables
+- `.env.production` - Production environment variables (create this file for production deployment)
 
-## Running the application
+Key environment variables include:
 
-1. Start the development environment
+- MongoDB connection credentials
+- JWT configuration
+- Server and client ports
+- Docker environment settings
+
+## Running the Application
+
+The project includes a helper script `pamoja.sh` that simplifies Docker operations:
+
+### Starting the Application
+
+1. Start in development mode:
 
 ```bash
 ./pamoja.sh start:dev
 ```
 
-2. Start the production environment
+2. Start in production mode:
 
 ```bash
 ./pamoja.sh start:prod
 ```
 
-3. Stop the application
+### Managing the Application
+
+3. Stop all containers:
 
 ```bash
 ./pamoja.sh stop
 ```
 
-4. View the logs
+4. View logs for all services:
 
 ```bash
 ./pamoja.sh logs
 ```
 
-5. Rebuild the application
+5. View logs for a specific service:
 
 ```bash
-./pamoja.sh rebuild
+./pamoja.sh logs:service <service-name>
 ```
 
-## Deployment Strategy
+Example: `./pamoja.sh logs:service server`
 
-The application can be deployed using:
+6. Rebuild a specific service:
 
-- Container-based deployment (Docker)
-- CI/CD pipeline automation
-- Database backup and migration procedures
+```bash
+./pamoja.sh rebuild <service-name>
+```
+
+Example: `./pamoja.sh rebuild client`
+
+### Database Management
+
+7. Create a MongoDB backup:
+
+```bash
+./pamoja.sh db:backup
+```
+
+Backups are saved to the `./backups` directory.
+
+8. Restore a MongoDB backup:
+
+```bash
+./pamoja.sh db:restore <backup-directory>
+```
+
+9. Check MongoDB replica set status:
+
+```bash
+./pamoja.sh db:status
+```
+
+10. Display help information:
+
+```bash
+./pamoja.sh help
+```
+
+## Project Structure
+
+```
+pamoja-platform/
+├── client/                # React frontend application
+│   ├── public/            # Static assets
+│   ├── src/               # Source code
+│   └── docker/            # Docker configuration files
+├── server/                # Express backend application
+│   ├── src/               # Server source code
+│   └── docker/            # Docker configuration files
+├── mongo-init/            # MongoDB initialization scripts
+├── scripts/               # Utility scripts including mongo-init.sh
+├── docker-compose.yml     # Development Docker Compose configuration
+├── docker-compose.prod.yml # Production Docker Compose configuration
+├── .env.development       # Development environment variables
+├── pamoja.sh              # Helper script for Docker operations
+└── README.md              # Project documentation
+```
+
+## Docker Architecture
+
+The platform runs using Docker Compose with the following services:
+
+- **client**: React frontend application
+- **server**: Express.js backend API
+- **mongo1**, **mongo2**, **mongo3**: MongoDB replica set for high availability
+- **mongo-express**: Web-based MongoDB admin interface (development only)
+- **mongo-init**: Service to initialize the MongoDB replica set
+
+The MongoDB setup uses a replica set configuration for data redundancy and high availability.
 
 ---
 

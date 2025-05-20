@@ -23,7 +23,7 @@ export default function HeroSection(props) {
       className="relative bg-white dark:bg-gray-900 overflow-hidden py-16 md:py-24 lg:py-32"
     >
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-red-500 opacity-10 dark:opacity-20" />
+      <div className="dark:bg-gray-900 absolute inset-0 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-800" />
 
       <div className="relative container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -42,8 +42,8 @@ export default function HeroSection(props) {
                   href={button.href}
                   className={
                     button.variant === "secondary"
-                      ? "px-6 py-3 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-50 dark:hover:bg-blue-900"
-                      : "px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700"
+                      ? "px-6 py-3 border border-green-600 text-green-600 rounded-md font-medium hover:bg-blue-50 dark:hover:bg-blue-900"
+                      : "px-6 py-3 bg-green-600 text-white rounded-md font-medium hover:bg-blue-700"
                   }
                 >
                   {button.title}
